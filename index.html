@@ -81,22 +81,6 @@
             document.getElementById('browser-frame').src = "https://www.google.com";
         };
 
-        function isValidURL(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                // Check if it could be a valid URL with http:// prefix
-                try {
-                    new URL("http://" + string);
-                    // Check if it has a domain-like format (contains a dot)
-                    return string.includes(".");
-                } catch (_) {
-                    return false;
-                }
-            }
-        }
-
         function handleKeyDown(event) {
             if (event.key === 'Enter') {
                 navigate();
@@ -113,19 +97,6 @@
             
             // Exit early if the input is empty
             if (!input) return;
-            
-            // Update the search bar with the processed URL
-            document.getElementById('search-bar').value = input;
-            
-            if (isValidURL(input)) {
-                // The input is a valid URL
-                if (!input.startsWith('http://') && !input.startsWith('https://')) {
-                    input = 'https://' + input;
-                }
-            } else {
-                // The input is not a valid URL, use Google search
-                input = 'https://www.google.com/search?q=' + encodeURIComponent(input);
-            }
             
             // Update the iframe source
             document.getElementById('browser-frame').src = input;
