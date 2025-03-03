@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Browser</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #search-bar {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #browser-frame {
+            width: 100%;
+            height: calc(100% - 40px); /* Adjust height to account for search bar */
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="search-bar" placeholder="Enter URL and press Enter" onkeydown="navigate(event)">
+    <iframe id="browser-frame"></iframe>
+
+    <script>
+        function navigate(event) {
+            if (event.key === 'Enter') {
+                const url = document.getElementById('search-bar').value;
+                document.getElementById('browser-frame').src = url;
+            }
+        }
+    </script>
+</body>
+</html>
