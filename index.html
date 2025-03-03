@@ -9,30 +9,126 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            font-family: Arial, sans-serif;
             overflow: hidden;
         }
-        #search-bar {
-            width: 100%;
+        #browser-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        #nav-bar {
+            display: flex;
             padding: 10px;
-            box-sizing: border-box;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+        }
+        #search-bar {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #search-bar:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        #go-button {
+            margin-left: 10px;
+            padding: 8px 16px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #go-button:hover {
+            background-color: #3367d6;
         }
         #browser-frame {
             width: 100%;
-            height: calc(100% - 40px); /* Adjust height to account for search bar */
+            flex-grow: 1;
             border: none;
+        }
+        #back-button {
+            margin-right: 10px;
+            padding: 8px 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #back-button:hover {
+            background-color: #e1e1e1;
         }
     </style>
 </head>
 <body>
-    <input type="text" id="search-bar" placeholder="Enter URL and press Enter" onkeydown="navigate(event)">
-    <iframe id="browser-frame"></iframe>
+    <div id="browser-container">
+        <div id="nav-bar">
+            <button id="back-button" onclick="goBack()">Back</button>
+            <input type="text" id="search-bar" placeholder="Enter URL or search terms" onkeydown="handleKeyDown(event)">
+            <button id="go-button" onclick="navigate()">Go</button>
+        </div>
+        <iframe id="browser-frame" src="about:blank"></iframe>
+    </div>
 
     <script>
-        function navigate(event) {
-            if (event.key === 'Enter') {
-                const url = document.getElementById('search-bar').value;
-                document.getElementById('browser-frame').src = url;
+        // Initialize with a default page or homepage
+        window.onload = function() {
+            document.getElementById('browser-frame').src = "https://www.google.com";
+        };
+
+        function isValidURL(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                // Check if it could be a valid URL with http:// prefix
+                try {
+                    new URL("http://" + string);
+                    // Check if it has a domain-like format (contains a dot)
+                    return string.includes(".");
+                } catch (_) {
+                    return false;
+                }
             }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                navigate();
+            }
+        }
+
+        function goBack() {
+            const iframe = document.getElementById('browser-frame');
+            iframe.contentWindow.history.back();
+        }
+
+        function navigate() {
+            let input = document.getElementById('search-bar').value.trim();
+            
+            // Exit early if the input is empty
+            if (!input) return;
+            
+            // Update the search bar with the processed URL
+            document.getElementById('search-bar').value = input;
+            
+            if (isValidURL(input)) {
+                // The input is a valid URL
+                if (!input.startsWith('http://') && !input.startsWith('https://')) {
+                    input = 'https://' + input;
+                }
+            } else {
+                // The input is not a valid URL, use Google search
+                input = 'https://www.google.com/search?q=' + encodeURIComponent(input);
+            }
+            
+            // Update the iframe source
+            document.getElementById('browser-frame').src = input;
         }
     </script>
 </body>
